@@ -11,8 +11,13 @@ class AudioControllCubit extends Cubit<AudioControllState> {
   final AudioPlayerRepository songRepository;
   AudioControllCubit({required this.songRepository}) : super(Initial());
   bool get isPlaying => _isPlaying;
+  bool get audioPlayer => songRepository.player;
   // double get currentAudioPosition => _currentAudioPosition;
   // Duration get totalDuration => _totalDuration;
+  Future<Duration?> getDuration() async {
+    return await songRepository.getDuration();
+  }
+
   void playMusic({required String path, required int musicIndex}) {
     _isPlaying = true;
     currentMusicId = musicIndex;
@@ -38,5 +43,9 @@ class AudioControllCubit extends Cubit<AudioControllState> {
 
   void seekAudio({required Duration duration}) {
     songRepository.seekAudio(duration);
+  }
+
+  void updatePosition(Duration position) {
+    emit(PositionUpdated(position));
   }
 }

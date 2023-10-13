@@ -50,34 +50,28 @@ class MusicPlayerView extends StatelessWidget {
                 MusicTitle(musicIndex: musicIndex),
                 musicControlls(musicFiles, audioControllerCubit),
                 const MusicVolumeSlider(),
-                // BlocBuilder<AudioControllCubit, AudioControllState>(
-                //   builder: (context, state) {
-                //     return Column(
-                //       mainAxisAlignment: MainAxisAlignment.center,
-                //       children: [
-                //         Slider(
-                //           value: audioControllerCubit.currentAudioPosition
-                //               .toDouble(),
-                //           min: 0,
-                //           max: context
-                //               .read<AudioControllCubit>()
-                //               .totalDuration
-                //               .inSeconds
-                //               .toDouble(),
-                //           onChanged: (value) {
-                //             context.read<AudioControllCubit>().seekAudio(
-                //                 duration: Duration(seconds: value.toInt()));
-                //             // audioPlayer.seek(Duration(seconds: value.toInt()));
-                //           },
-                //         ),
-                //         Text(
-                //             'Duration: ${context.read<AudioControllCubit>().totalDuration.inSeconds} seconds'),
-                //         Text(
-                //             'Position: ${context.read<AudioControllCubit>().currentAudioPosition.toInt()} seconds'),
-                //       ],
-                //     );
-                //   },
-                // ),
+                BlocBuilder<AudioControllCubit, AudioControllState>(
+                  builder: (context, state) {
+                    if (state is PositionUpdated) {
+                      final currentPosition = state.position;
+                      final totalDuration = audioControllerCubit.getDuration();
+
+                      return Slider(
+                        value: currentPosition.inMilliseconds.toDouble(),
+                        min: 0,
+                        max: 4,
+                        onChanged: (value) {
+                          final seekPosition =
+                              Duration(milliseconds: value.toInt());
+                          audioControllerCubit.seekAudio(
+                              duration: seekPosition);
+                        },
+                      );
+                    } else {
+                      return const SizedBox(); // Hide the seek bar if not updated
+                    }
+                  },
+                )
               ],
             ),
           );
